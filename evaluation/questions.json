@@ -1,0 +1,83 @@
+[
+    {
+        "question": "What was Apple's total net sales in 2025?",
+        "reference": "Apple's total net sales in 2025 were $416,161 million."
+    },
+    {
+        "question": "What was Apple's net income in 2025?",
+        "reference": "Apple's net income in 2025 was $112,010 million."
+    },
+    {
+        "question": "What was Apple's research and development expense in 2025?",
+        "reference": "Apple's research and development expense in 2025 was $34,550 million."
+    },
+    {
+        "question": "What were Apple's total operating expenses in 2025?",
+        "reference": "Apple's total operating expenses in 2025 were $62,151 million."
+    },
+    {
+        "question": "What were Apple's total Services net sales in 2025?",
+        "reference": "Apple's Services net sales in 2025 were $109,158 million."
+    },
+ {
+    "question": "What was Apple's total net sales in 2024?",
+    "reference": "Enter the verified 2024 total net sales from the 10-K."
+  },
+  {
+    "question": "What was Apple's total net sales in 2023?",
+    "reference": "Enter the verified 2023 total net sales from the 10-K."
+  },
+  {
+    "question": "How much did Apple's total net sales change from 2024 to 2025?",
+    "reference": "Enter the verified difference, with units."
+  },
+  {
+    "question": "What was Apple's total operating income in 2025?",
+    "reference": "Enter the verified 2025 operating income from the 10-K."
+  },
+  {
+    "question": "What was Apple's total cost of sales in 2025?",
+    "reference": "Enter the verified 2025 cost of sales from the 10-K."
+  },
+  {
+    "question": "What were Apple's total net sales from products in 2025?",
+    "reference": "Enter the verified 2025 Products net sales."
+  },
+  {
+    "question": "What was Apple's total research and development expense in 2024?",
+    "reference": "Enter the verified 2024 R&D expense."
+  },
+  {
+    "question": "What was Apple's total selling, general and administrative expense in 2025?",
+    "reference": "Enter the verified 2025 SG&A expense."
+  },
+  {
+    "question": "What was Apple's cash and cash equivalents balance at the end of 2025?",
+    "reference": "Enter the verified balance sheet amount."
+  },
+  {
+    "question": "What was Apple's total current assets at the end of 2025?",
+    "reference": "Enter the verified total current assets."
+  },
+  {
+    "question": "What was Apple's total current liabilities at the end of 2025?",
+    "reference": "Enter the verified total current liabilities."
+  },
+  {
+    "question": "What was Apple's total long-term debt at the end of 2025?",
+    "reference": "Enter the verified long-term debt amount."
+  },
+  {
+    "question": "What was Apple's diluted earnings per share in 2025?",
+    "reference": "Enter the verified diluted EPS."
+  },
+  {
+    "question": "What was Apple's total cash generated from operating activities in 2025?",
+    "reference": "Enter the verified operating cash flow."
+  },
+  {
+    "question": "What was Apple's total dividend amount paid in 2025?",
+    "reference": "Enter the verified dividend amount from the cash flow statement."
+  }
+]
+

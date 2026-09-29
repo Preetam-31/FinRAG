@@ -1,0 +1,21 @@
+question,answer,reference,model_used
+What was Apple's total net sales in 2025?,"Apple's total net sales in 2025 were $416,161 million.","Apple's total net sales in 2025 were $416,161 million.",Ollama
+What was Apple's net income in 2025?,"Apple's net income in 2025 was $112,010 million.","Apple's net income in 2025 was $112,010 million.",Ollama
+What was Apple's research and development expense in 2025?,"Apple's research and development expense in 2025 was $34,550 million.","Apple's research and development expense in 2025 was $34,550 million.",Ollama
+What were Apple's total operating expenses in 2025?,"Apple's total operating expenses in 2025 were $62,151 million.","Apple's total operating expenses in 2025 were $62,151 million.",Ollama
+What were Apple's total Services net sales in 2025?,"Apple's total Services net sales in 2025 were $109,158 million.","Apple's Services net sales in 2025 were $109,158 million.",Ollama
+What was Apple's total net sales in 2024?,"Apple's total net sales in 2024 were $391,035 million.",Enter the verified 2024 total net sales from the 10-K.,Ollama
+What was Apple's total net sales in 2023?,"Apple's total net sales in 2023 were $383,285 million.",Enter the verified 2023 total net sales from the 10-K.,Ollama
+How much did Apple's total net sales change from 2024 to 2025?,"Apple's total net sales in 2025 were $416,161 million.","Enter the verified difference, with units.",Ollama
+What was Apple's total operating income in 2025?,"Apple's total operating income in 2025 was $133,050 million.",Enter the verified 2025 operating income from the 10-K.,Ollama
+What was Apple's total cost of sales in 2025?,"Apple's total cost of sales in 2025 was $220,960 million.",Enter the verified 2025 cost of sales from the 10-K.,Ollama
+What were Apple's total net sales from products in 2025?,"Apple's total net sales from products in 2025 were $307,003 million.",Enter the verified 2025 Products net sales.,Ollama
+What was Apple's total research and development expense in 2024?,"Apple's total research and development expense in 2024 was $31,370 million.",Enter the verified 2024 R&D expense.,Ollama
+"What was Apple's total selling, general and administrative expense in 2025?","Apple's total selling, general and administrative expense in 2025 was $27,601 million.",Enter the verified 2025 SG&A expense.,Ollama
+What was Apple's cash and cash equivalents balance at the end of 2025?,"Apple's cash and cash equivalents balance at the end of 2025 was $35,934 million.",Enter the verified balance sheet amount.,Ollama
+What was Apple's total current assets at the end of 2025?,"Apple's total current assets at the end of 2025 were $147,957 million.",Enter the verified total current assets.,Ollama
+What was Apple's total current liabilities at the end of 2025?,"Apple's total current liabilities at the end of 2025 were $165,631 million.",Enter the verified total current liabilities.,Ollama
+What was Apple's total long-term debt at the end of 2025?,"Apple's total long-term debt at the end of 2025 was $78,328 million.",Enter the verified long-term debt amount.,Ollama
+What was Apple's diluted earnings per share in 2025?,Apple's diluted earnings per share in 2025 was $7.46.,Enter the verified diluted EPS.,Ollama
+What was Apple's total cash generated from operating activities in 2025?,"Apple's total cash generated from operating activities in 2025 was $111,482 million.",Enter the verified operating cash flow.,Ollama
+What was Apple's total dividend amount paid in 2025?,"Apple's total dividend amount paid in 2025 was $15,413 million.",Enter the verified dividend amount from the cash flow statement.,Ollama

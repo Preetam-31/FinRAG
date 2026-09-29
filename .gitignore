@@ -1,0 +1,28 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environment and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local vector database
+qdrant_data/
+qdrant_storage/
+
+# Local data and downloaded documents
+data/
+
+# Evaluation checkpoints and backups
+evaluation/checkpoint*.json
+evaluation/*backup*
+evaluation/*before_*
+
+# Editor and operating system files
+.vscode/
+.DS_Store
+Thumbs.db

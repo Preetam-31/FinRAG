@@ -1,0 +1,21 @@
+question,context_recall,faithfulness,factual_correctness
+What was Apple's total net sales in 2025?,1.0,1.0,1.0
+What was Apple's net income in 2025?,1.0,1.0,1.0
+What was Apple's research and development expense in 2025?,1.0,1.0,1.0
+What were Apple's total operating expenses in 2025?,1.0,1.0,1.0
+What were Apple's total Services net sales in 2025?,1.0,1.0,1.0
+What was Apple's total net sales in 2024?,1.0,1.0,0.0
+What was Apple's total net sales in 2023?,1.0,1.0,0.0
+How much did Apple's total net sales change from 2024 to 2025?,1.0,1.0,0.0
+What was Apple's total operating income in 2025?,0.0,0.0,0.0
+What was Apple's total cost of sales in 2025?,1.0,1.0,0.0
+What were Apple's total net sales from products in 2025?,1.0,1.0,0.0
+What was Apple's total research and development expense in 2024?,1.0,1.0,0.0
+"What was Apple's total selling, general and administrative expense in 2025?",1.0,1.0,0.0
+What was Apple's cash and cash equivalents balance at the end of 2025?,1.0,1.0,0.0
+What was Apple's total current assets at the end of 2025?,0.0,1.0,0.0
+What was Apple's total current liabilities at the end of 2025?,0.0,1.0,0.0
+What was Apple's total long-term debt at the end of 2025?,0.0,0.0,0.0
+What was Apple's diluted earnings per share in 2025?,0.0,1.0,0.0
+What was Apple's total cash generated from operating activities in 2025?,0.0,1.0,0.0
+What was Apple's total dividend amount paid in 2025?,0.0,0.0,0.0

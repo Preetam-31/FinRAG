@@ -15,7 +15,9 @@ qdrant_data/
 qdrant_storage/
 
 # Local data and downloaded documents
-data/
+data/*
+!data/documents/
+!data/documents/company_report.pdf
 
 # Evaluation checkpoints and backups
 evaluation/checkpoint*.json

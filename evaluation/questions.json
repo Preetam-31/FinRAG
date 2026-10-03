@@ -19,65 +19,65 @@
         "question": "What were Apple's total Services net sales in 2025?",
         "reference": "Apple's Services net sales in 2025 were $109,158 million."
     },
- {
-    "question": "What was Apple's total net sales in 2024?",
-    "reference": "Enter the verified 2024 total net sales from the 10-K."
-  },
-  {
-    "question": "What was Apple's total net sales in 2023?",
-    "reference": "Enter the verified 2023 total net sales from the 10-K."
-  },
-  {
-    "question": "How much did Apple's total net sales change from 2024 to 2025?",
-    "reference": "Enter the verified difference, with units."
-  },
-  {
-    "question": "What was Apple's total operating income in 2025?",
-    "reference": "Enter the verified 2025 operating income from the 10-K."
-  },
-  {
-    "question": "What was Apple's total cost of sales in 2025?",
-    "reference": "Enter the verified 2025 cost of sales from the 10-K."
-  },
-  {
-    "question": "What were Apple's total net sales from products in 2025?",
-    "reference": "Enter the verified 2025 Products net sales."
-  },
-  {
-    "question": "What was Apple's total research and development expense in 2024?",
-    "reference": "Enter the verified 2024 R&D expense."
-  },
-  {
-    "question": "What was Apple's total selling, general and administrative expense in 2025?",
-    "reference": "Enter the verified 2025 SG&A expense."
-  },
-  {
-    "question": "What was Apple's cash and cash equivalents balance at the end of 2025?",
-    "reference": "Enter the verified balance sheet amount."
-  },
-  {
-    "question": "What was Apple's total current assets at the end of 2025?",
-    "reference": "Enter the verified total current assets."
-  },
-  {
-    "question": "What was Apple's total current liabilities at the end of 2025?",
-    "reference": "Enter the verified total current liabilities."
-  },
-  {
-    "question": "What was Apple's total long-term debt at the end of 2025?",
-    "reference": "Enter the verified long-term debt amount."
-  },
-  {
-    "question": "What was Apple's diluted earnings per share in 2025?",
-    "reference": "Enter the verified diluted EPS."
-  },
-  {
-    "question": "What was Apple's total cash generated from operating activities in 2025?",
-    "reference": "Enter the verified operating cash flow."
-  },
-  {
-    "question": "What was Apple's total dividend amount paid in 2025?",
-    "reference": "Enter the verified dividend amount from the cash flow statement."
-  }
+    {
+        "question": "What was Apple's total net sales in 2024?",
+        "reference": "Apple's total net sales in 2024 were $391,035 million."
+    },
+    {
+        "question": "What was Apple's total net sales in 2023?",
+        "reference": "Apple's total net sales in 2023 were $383,285 million."
+    },
+    {
+        "question": "How much did Apple's total net sales change from 2024 to 2025?",
+        "reference": "Apple's total net sales increased by $25,126 million from 2024 to 2025, from $391,035 million to $416,161 million."
+    },
+    {
+        "question": "What was Apple's total operating income in 2025?",
+        "reference": "Apple's total operating income in 2025 was $133,050 million."
+    },
+    {
+        "question": "What was Apple's total cost of sales in 2025?",
+        "reference": "Apple's total cost of sales in 2025 was $220,960 million."
+    },
+    {
+        "question": "What were Apple's total net sales from products in 2025?",
+        "reference": "Apple's Products net sales in 2025 were $307,003 million."
+    },
+    {
+        "question": "What was Apple's total research and development expense in 2024?",
+        "reference": "Apple's research and development expense in 2024 was $31,370 million."
+    },
+    {
+        "question": "What was Apple's total selling, general and administrative expense in 2025?",
+        "reference": "Apple's selling, general and administrative expense in 2025 was $27,601 million."
+    },
+    {
+        "question": "What was Apple's cash and cash equivalents balance at the end of 2025?",
+        "reference": "Apple's cash and cash equivalents balance at the end of 2025 was $35,934 million."
+    },
+    {
+        "question": "What was Apple's total current assets at the end of 2025?",
+        "reference": "Apple's total current assets at the end of 2025 were $147,957 million."
+    },
+    {
+        "question": "What was Apple's total current liabilities at the end of 2025?",
+        "reference": "Apple's total current liabilities at the end of 2025 were $165,631 million."
+    },
+    {
+        "question": "What was Apple's total long-term debt at the end of 2025?",
+        "reference": "Apple's non-current term debt at the end of 2025 was $78,328 million."
+    },
+    {
+        "question": "What was Apple's diluted earnings per share in 2025?",
+        "reference": "Apple's diluted earnings per share in 2025 were $7.46."
+    },
+    {
+        "question": "What was Apple's total cash generated from operating activities in 2025?",
+        "reference": "Apple generated $111,482 million in cash from operating activities in 2025."
+    },
+    {
+        "question": "What was Apple's total dividend amount paid in 2025?",
+        "reference": "Apple paid $15,421 million in dividends and dividend equivalents in 2025."
+    }
 ]
 

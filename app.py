@@ -87,3 +87,13 @@ def ask_question(request: QuestionRequest):
             status_code=500,
             detail="An internal error occurred while processing the question."
         )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000
+    )    

@@ -1,0 +1,21 @@
+question_number,question,expected_value,relevant_chunk_count,first_relevant_rank,recall_at_5,reciprocal_rank,retrieval_time_seconds
+1,What was Apple's total net sales in 2025?,416161,6,1.0,1,1.0,5.876036799978465
+2,What was Apple's net income in 2025?,112010,6,2.0,1,0.5,5.609313799999654
+3,What was Apple's research and development expense in 2025?,34550,4,1.0,1,1.0,5.9858832999598235
+4,What were Apple's total operating expenses in 2025?,62151,3,1.0,1,1.0,5.923675399972126
+5,What were Apple's total Services net sales in 2025?,109158,3,1.0,1,1.0,5.6261060000397265
+6,What was Apple's total net sales in 2024?,391035,6,1.0,1,1.0,5.0926500000059605
+7,What was Apple's total net sales in 2023?,383285,6,1.0,1,1.0,5.09949339996092
+8,How much did Apple's total net sales change from 2024 to 2025?,25126,0,,0,0.0,5.168478700099513
+9,What was Apple's total operating income in 2025?,133050,3,2.0,1,0.5,5.207327499985695
+10,What was Apple's total cost of sales in 2025?,220960,3,1.0,1,1.0,5.639275199966505
+11,What were Apple's total net sales from products in 2025?,307003,1,1.0,1,1.0,4.965767499990761
+12,What was Apple's total research and development expense in 2024?,31370,4,1.0,1,1.0,5.371121600037441
+13,"What was Apple's total selling, general and administrative expense in 2025?",27601,3,2.0,1,0.5,5.499446599977091
+14,What was Apple's cash and cash equivalents balance at the end of 2025?,35934,3,1.0,1,1.0,5.456487599993125
+15,What was Apple's total current assets at the end of 2025?,147957,1,1.0,1,1.0,5.392041699960828
+16,What was Apple's total current liabilities at the end of 2025?,165631,1,5.0,1,0.2,5.303210299927741
+17,What was Apple's total long-term debt at the end of 2025?,78328,2,5.0,1,0.2,5.144396199844778
+18,What was Apple's diluted earnings per share in 2025?,7.46,3,1.0,1,1.0,5.293226500041783
+19,What was Apple's total cash generated from operating activities in 2025?,111482,1,2.0,1,0.5,5.409602399915457
+20,What was Apple's total dividend amount paid in 2025?,15421,1,,0,0.0,4.907544699963182

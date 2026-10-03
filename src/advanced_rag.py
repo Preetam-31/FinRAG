@@ -3,6 +3,7 @@ import os
 import json
 import urllib.request
 import urllib.error
+from pathlib import Path
 
 from dotenv import load_dotenv
 import fitz
@@ -16,38 +17,37 @@ from qdrant_client.models import Distance, VectorParams, PointStruct
 
 from rank_bm25 import BM25Okapi
 
-from google import genai
-from google.genai import types
+from groq import Groq
 
 
 # ============================================================
 # 1. LOAD ENVIRONMENT VARIABLES
 # ============================================================
 
-load_dotenv()
+ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
 
-api_key = os.getenv("GEMINI_API_KEY")
+load_dotenv(dotenv_path=ENV_PATH, override=True)
 
-if api_key:
-    gemini_client = genai.Client(api_key=api_key)
-    print("Gemini client initialized.")
+groq_api_key = os.getenv("GROQ_API_KEY")
+
+if groq_api_key:
+    groq_client = Groq(api_key=groq_api_key)
+    print("Groq client initialized.")
 else:
-    gemini_client = None
-    print("Gemini API key not found. Ollama will be used.")
+    groq_client = None
+    print("Groq API key not found. Ollama will be used.")
 
-
-# Gemini circuit breaker:
-# Once Gemini fails, it will not be called again during this
-# running process. Ollama will handle all further questions.
-
-GEMINI_DISABLED = False
+GROQ_DISABLED = False
 
 
 # ============================================================
 # 2. CONFIGURATION
 # ============================================================
+from pathlib import Path
 
-PDF_PATH = "data/documents/company_report.pdf"
+ROOT_DIR = Path(__file__).resolve().parents[1]
+PDF_PATH = ROOT_DIR / "data" / "documents" / "company_report.pdf"
+
 
 COLLECTION_NAME = "finrag_documents"
 
@@ -55,14 +55,14 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 RERANKER_MODEL = "BAAI/bge-reranker-base"
 
-GEMINI_MODEL = os.getenv(
-    "GEMINI_MODEL",
-    "gemini-3.6-flash"
+GROQ_MODEL = os.getenv(
+    "GROQ_MODEL",
+    "openai/gpt-oss-20b"
 )
 
 OLLAMA_MODEL = "qwen2.5:3b"
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_URL = "http://ollama:11434/api/generate"
 
 
 # ============================================================
@@ -165,7 +165,7 @@ embeddings = embedding_model.encode(
 # ============================================================
 
 qdrant_client = QdrantClient(
-    path="qdrant_data"
+    url="http://qdrant:6333"
 )
 
 collection_name = COLLECTION_NAME
@@ -271,11 +271,9 @@ bm25 = BM25Okapi(
 # 12. LOAD CROSS ENCODER
 # ============================================================
 
-print("Loading Cross-Encoder...")
+print("Cross-Encoder disabled for Docker deployment.")
 
-reranker = CrossEncoder(
-    RERANKER_MODEL
-)
+reranker = None
 
 
 # ============================================================
@@ -418,20 +416,21 @@ def rerank_results(query, results, top_k=5):
     pairs = []
 
     for result in results:
-
         pairs.append([
             query,
             result["text"]
         ])
 
-    scores = reranker.predict(
-        pairs
-    )
+    if reranker is not None:
+        scores = reranker.predict(
+            pairs
+        )
+    else:
+        scores = [0.0] * len(results)
 
     reranked_results = []
 
     for index, score in enumerate(scores):
-
         reranked_results.append({
             "text": results[index]["text"],
             "page": results[index]["page"],
@@ -451,71 +450,58 @@ def rerank_results(query, results, top_k=5):
 # ============================================================
 
 def generate_answer(prompt):
+    global GROQ_DISABLED
 
-    global GEMINI_DISABLED
-
-    # --------------------------------------------------------
-    # TRY GEMINI ONLY ONCE
-    # --------------------------------------------------------
-
-    if gemini_client is not None and not GEMINI_DISABLED:
-
+    # Try Groq first
+    if groq_client is not None and not GROQ_DISABLED:
         try:
+            print("Trying Groq...")
 
-            print("Trying Gemini...")
-
-            response = gemini_client.models.generate_content(
-                model=GEMINI_MODEL,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0,
-                    max_output_tokens=120
-                )
+            response = groq_client.chat.completions.create(
+                model=GROQ_MODEL,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0,
+                max_tokens=200
             )
 
-            if response.text and response.text.strip():
+            answer = response.choices[0].message.content
 
-                print("Gemini answered successfully.")
+            if answer and answer.strip():
+                answer = answer.strip()
 
-                return response.text.strip()
+                prefixes = [
+                    "Answer:",
+                    "Answer -",
+                    "Response:",
+                    "Final answer:"
+                ]
 
-            else:
+                for prefix in prefixes:
+                    if answer.lower().startswith(prefix.lower()):
+                        answer = answer[len(prefix):].strip()
 
-                print("Gemini returned an empty response.")
+                print("Groq answered successfully.")
+                print("Generated answer:", answer)
 
-                # Disable Gemini for all further questions
-                # in this running process.
+                return answer
 
-                GEMINI_DISABLED = True
-
-                print("Gemini disabled for this session.")
+            print("Groq returned an empty response.")
 
         except Exception as e:
-
-            print("Gemini failed:")
+            print("Groq failed:")
             print(str(e))
 
-            # Do not retry Gemini.
+            GROQ_DISABLED = True
 
-            GEMINI_DISABLED = True
+            print("Switching to Ollama.")
 
-            print("Gemini disabled for this session.")
-            print("Switching to Ollama immediately.")
-
-    elif GEMINI_DISABLED:
-
-        print("Gemini is disabled after an earlier failure.")
-
-    else:
-
-        print("Gemini is not configured.")
-
-    # --------------------------------------------------------
-    # OLLAMA FALLBACK
-    # --------------------------------------------------------
-
+    # Ollama fallback
     try:
-
         print("Generating answer using Ollama...")
 
         payload = {
@@ -524,7 +510,7 @@ def generate_answer(prompt):
             "stream": False,
             "options": {
                 "temperature": 0,
-                "num_predict": 120
+                "num_predict": 200
             }
         }
 
@@ -549,28 +535,37 @@ def generate_answer(prompt):
             )
 
         answer = result.get(
-            "response", ""
+            "response",
+            ""
         ).strip()
 
         if not answer:
-
             raise Exception(
                 "Ollama returned an empty response."
             )
 
+        prefixes = [
+            "Answer:",
+            "Answer -",
+            "Response:",
+            "Final answer:"
+        ]
+
+        for prefix in prefixes:
+            if answer.lower().startswith(prefix.lower()):
+                answer = answer[len(prefix):].strip()
+
         print("Ollama answered successfully.")
+        print("Generated answer:", answer)
 
         return answer
 
     except Exception as e:
-
         print("Ollama failed:")
         print(str(e))
 
         raise Exception(
-            "Ollama failed. Please check that the "
-            "Ollama server is running and the model "
-            "is available."
+            "Ollama failed. Please check that the Ollama server is running and the model is available."
         )
 
 
@@ -790,11 +785,33 @@ def answer_question(query):
     # --------------------------------------------------------
 
     prompt = f"""
-You are a precise financial document question-answering
-assistant.
+Answer the question using ONLY the financial document context below.
 
-Your task is to answer ONE specific financial question
-using ONLY the provided document context.
+Question:
+{query}
+
+Context:
+{context}
+
+Rules:
+- Give exactly one short sentence.
+- Give the exact value requested.
+- Use the correct year.
+- Do not copy the table.
+- Do not mention the context.
+- Do not explain your reasoning.
+- Do not write "Answer:".
+- Do not repeat the question.
+- Do not invent information.
+- If the value cannot be found, say:
+I could not find this information in the document.
+
+Example:
+Question: What was Apple's total net sales in 2025?
+Correct answer: Total net sales were $416,161 million.
+
+Now answer the question.
+
 
 QUESTION:
 {query}

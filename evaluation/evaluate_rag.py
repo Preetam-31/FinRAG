@@ -38,6 +38,7 @@ load_dotenv(ROOT_DIR / ".env")
 
 api_key = os.getenv("GEMINI_API_KEY")
 
+# Keep Gemini 3.8 Flash as requested
 GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-3.8-flash"
@@ -48,6 +49,7 @@ OLLAMA_MODEL = os.getenv(
     "qwen2.5:3b"
 )
 
+# Correct Ollama OpenAI-compatible endpoint
 OLLAMA_BASE_URL = os.getenv(
     "OLLAMA_BASE_URL",
     "http://localhost:11434/v1"
@@ -63,7 +65,8 @@ RUN_RAGAS = os.getenv(
 # 2. INITIALIZE MODELS
 # ============================================================
 
-# If the Gemini API key is missing, use Ollama directly.
+# If the Gemini API key is missing, use Ollama directly
+# for answer generation.
 gemini_disabled = not bool(api_key)
 
 if gemini_disabled:
@@ -73,7 +76,9 @@ if gemini_disabled:
 gemini_client = None
 
 if api_key:
-    gemini_client = genai.Client(api_key=api_key)
+    gemini_client = genai.Client(
+        api_key=api_key
+    )
 
 ollama_client = OpenAI(
     base_url=OLLAMA_BASE_URL,
@@ -139,6 +144,10 @@ def generate_answer(prompt):
 
     If Gemini fails, disable it for the rest of the run
     and use Ollama without retrying Gemini.
+
+    IMPORTANT:
+    This fallback is only for answer generation.
+    RAGAS evaluation uses Gemini only.
     """
 
     global gemini_disabled
@@ -157,7 +166,11 @@ def generate_answer(prompt):
                 contents=prompt,
             )
 
-            answer = getattr(response, "text", None)
+            answer = getattr(
+                response,
+                "text",
+                None
+            )
 
             if answer and answer.strip():
 
@@ -189,18 +202,12 @@ def extract_financial_answer(question, context):
     """
     Extract financial figures directly from retrieved context.
 
-    The function selects the first figure in a financial
-    statement row, assuming the table columns are ordered
-    newest year to oldest year, such as 2025, 2024, 2023.
-
-    Returns:
-        Extracted answer if a matching figure is found.
-        None if the requested figure is not found.
+    This function is currently not used for answer generation.
+    Gemini/Ollama answer generation is used instead.
     """
 
     question_lower = question.lower()
 
-    # Normalize whitespace while preserving line breaks.
     context = context.replace("\r", "\n")
 
     # --------------------------------------------------------
@@ -214,9 +221,9 @@ def extract_financial_answer(question, context):
     ):
 
         patterns = [
-            r"Total\s+net\s+sales\s*\$?\s*([\d,]+)",
-            r"Total\s+revenue\s*\$?\s*([\d,]+)",
-            r"Total\s+sales\s*\$?\s*([\d,]+)",
+            r"Total\s+net\s+sales\s+\$?\s*([\d,]+)",
+            r"Total\s+revenue\s+\$?\s*([\d,]+)",
+            r"Total\s+sales\s+\$?\s*([\d,]+)",
         ]
 
         for pattern in patterns:
@@ -229,8 +236,6 @@ def extract_financial_answer(question, context):
 
             if matches:
 
-                # First value corresponds to the latest year
-                # in the 2025, 2024, 2023 table.
                 value = matches[0]
 
                 return (
@@ -252,10 +257,8 @@ def extract_financial_answer(question, context):
     ):
 
         patterns = [
-            r"Services\s*(?:\(\s*1\s*\))?\s*"
-            r"\$?\s*([\d,]+)",
-
-            r"Services\s+net\s+sales\s*\$?\s*([\d,]+)",
+            r"Services\s+net\s+sales\s+\$?\s*([\d,]+)",
+            r"Services\s+\$?\s*([\d,]+)",
         ]
 
         for pattern in patterns:
@@ -282,8 +285,7 @@ def extract_financial_answer(question, context):
     if "net income" in question_lower:
 
         patterns = [
-            r"Net\s+income\s*\$?\s*([\d,]+)",
-            r"Net\s+income\s*\(loss\)\s*\$?\s*([\d,]+)",
+            r"Net\s+income\s+\$?\s*([\d,]+)",
         ]
 
         for pattern in patterns:
@@ -314,14 +316,9 @@ def extract_financial_answer(question, context):
     ):
 
         patterns = [
-            r"Research\s+and\s+development\s*"
-            r"\$?\s*([\d,]+)",
-
-            r"Research\s*&\s*development\s*"
-            r"\$?\s*([\d,]+)",
-
-            r"R\s*&\s*D\s*"
-            r"\$?\s*([\d,]+)",
+            r"Research\s+and\s+development\s+\$?\s*([\d,]+)",
+            r"Research\s*&\s*development\s+\$?\s*([\d,]+)",
+            r"R\s*&\s*D\s+\$?\s*([\d,]+)",
         ]
 
         for pattern in patterns:
@@ -351,11 +348,8 @@ def extract_financial_answer(question, context):
     ):
 
         patterns = [
-            r"Total\s+operating\s+expenses\s*"
-            r"\$?\s*([\d,]+)",
-
-            r"Total\s+operating\s+expense\s*"
-            r"\$?\s*([\d,]+)",
+            r"Total\s+operating\s+expenses\s+\$?\s*([\d,]+)",
+            r"Total\s+operating\s+expense\s+\$?\s*([\d,]+)",
         ]
 
         for pattern in patterns:
@@ -511,7 +505,6 @@ completed_questions = set()
 
 print("Old checkpoint entries cleared from memory.")
 print("All evaluation questions will be regenerated.")
-
 
 
 # ------------------------------------------------------------
@@ -948,21 +941,20 @@ Answer:
 
 
         # ====================================================
-       # ====================================================
-# 9J. LLM GENERATION FIRST
-# ====================================================
+        # 9J. LLM GENERATION
+        # ====================================================
 
-# Bypass rule-based extraction for this evaluation.
-# Send the question and retrieved context to Gemini,
-# with Ollama as fallback.
+        # Rule-based extraction is bypassed for this evaluation.
+        # Send the question and retrieved context to Gemini,
+        # with Ollama as fallback for answer generation only.
 
         answer, model_used = generate_answer(
             prompt
-)
+        )
 
         print(
-               f"\nAnswer generated using: {model_used}"
-)
+            f"\nAnswer generated using: {model_used}"
+        )
 
 
         # ====================================================
@@ -1117,17 +1109,23 @@ save_checkpoint(
 
 
 # ============================================================
-# ============================================================
 # 12. OPTIONAL RAGAS EVALUATION
 # ============================================================
 
 if not RUN_RAGAS:
+
     print("\nRUN_RAGAS is disabled.")
-    print("Answers are saved in:", RESULTS_PATH)
+
+    print(
+        "Answers are saved in:",
+        RESULTS_PATH
+    )
+
     print(
         "To run RAGAS later, set RUN_RAGAS=true in .env "
         "and rerun."
     )
+
     raise SystemExit(0)
 
 
@@ -1136,8 +1134,11 @@ if not RUN_RAGAS:
 # ============================================================
 
 print("\n" + "=" * 70)
+
 print("CREATING RAGAS EVALUATION DATASET")
+
 print("=" * 70)
+
 
 evaluation_samples = [
     SingleTurnSample(
@@ -1149,97 +1150,113 @@ evaluation_samples = [
     for item in evaluation_data
 ]
 
+
 evaluation_dataset = EvaluationDataset(
     samples=evaluation_samples
 )
 
-print("Evaluation samples:", len(evaluation_samples))
+
+print(
+    "Evaluation samples:",
+    len(evaluation_samples)
+)
 
 
 # ============================================================
-# 14. CREATE RAGAS EVALUATOR WITH GEMINI / OLLAMA FALLBACK
+# 14. CREATE RAGAS EVALUATOR USING GEMINI ONLY
 # ============================================================
 
 from openai import AsyncOpenAI
 from ragas.llms import llm_factory
 
+
 print("\nCreating RAGAS evaluator...")
 
 
-# Model used for Gemini evaluation
+# ------------------------------------------------------------
+# Model used for RAGAS evaluation
+# ------------------------------------------------------------
+
 RAGAS_MODEL = os.getenv(
     "RAGAS_MODEL",
     GEMINI_MODEL
 )
 
-# Track which evaluator is currently active
-ragas_backend = "gemini" if api_key else "ollama"
 
+# ------------------------------------------------------------
+# Gemini is REQUIRED for RAGAS
+# ------------------------------------------------------------
+
+if not api_key:
+
+    raise SystemExit(
+        "\nERROR: GEMINI_API_KEY is missing.\n"
+        "Gemini is required for RAGAS evaluation."
+    )
+
+
+ragas_backend = "gemini"
+
+
+# ------------------------------------------------------------
 # Global metric objects
+# ------------------------------------------------------------
+
 context_recall_metric = None
 faithfulness_metric = None
 factual_correctness_metric = None
 
 
-def create_ragas_metrics(backend):
+def create_ragas_metrics():
     """
-    Create RAGAS metrics using either Gemini or Ollama.
+    Create RAGAS metrics using Gemini only.
 
     Gemini uses Google's OpenAI-compatible endpoint.
-    Ollama uses its local OpenAI-compatible endpoint.
+
+    Ollama is NOT used for RAGAS evaluation.
     """
 
-    print("\nInitializing RAGAS with:", backend.upper())
+    print("\nInitializing RAGAS with: GEMINI")
 
-    if backend == "gemini":
+    print(
+        "RAGAS model:",
+        RAGAS_MODEL
+    )
 
-        if not api_key:
-            raise ValueError(
-                "GEMINI_API_KEY is missing."
-            )
 
-        client = AsyncOpenAI(
-            api_key=api_key,
-            base_url=(
-                "https://generativelanguage.googleapis.com/"
-                "v1beta/openai/"
-            ),
-            timeout=120.0,
-            max_retries=0,
-        )
+    client = AsyncOpenAI(
+        api_key=api_key,
+        base_url=(
+            "https://generativelanguage.googleapis.com/"
+            "v1beta/openai/"
+        ),
+        timeout=120.0,
+        max_retries=0,
+    )
 
-        model_name = RAGAS_MODEL
-
-    else:
-
-        # Local Ollama evaluator
-        client = AsyncOpenAI(
-            api_key="ollama",
-            base_url=OLLAMA_BASE_URL,
-            timeout=300.0,
-            max_retries=0,
-        )
-
-        model_name = OLLAMA_MODEL
 
     evaluator_llm = llm_factory(
-        model_name,
+        RAGAS_MODEL,
         provider="openai",
         client=client,
         temperature=0,
     )
 
+
     recall_metric = ContextRecall(
         llm=evaluator_llm
     )
+
 
     faithfulness = Faithfulness(
         llm=evaluator_llm
     )
 
+
     factual_correctness = FactualCorrectness(
         llm=evaluator_llm
     )
+
 
     return (
         recall_metric,
@@ -1248,45 +1265,54 @@ def create_ragas_metrics(backend):
     )
 
 
-def initialize_ragas(backend):
+def initialize_ragas():
     """
-    Initialize or replace all three RAGAS metrics.
+    Initialize all three RAGAS metrics using Gemini.
     """
 
-    global ragas_backend
     global context_recall_metric
     global faithfulness_metric
     global factual_correctness_metric
+
 
     (
         context_recall_metric,
         faithfulness_metric,
         factual_correctness_metric,
-    ) = create_ragas_metrics(backend)
+    ) = create_ragas_metrics()
 
-    ragas_backend = backend
 
     print(
-        "RAGAS evaluator ready:",
-        backend.upper()
+        "RAGAS evaluator ready: GEMINI"
     )
 
 
-# Use Gemini initially if an API key is available.
-# Otherwise, start directly with Ollama.
+# ------------------------------------------------------------
+# Initialize Gemini RAGAS evaluator
+# ------------------------------------------------------------
 
 try:
 
-    initialize_ragas(ragas_backend)
+    initialize_ragas()
 
 except Exception as error:
 
     print("\nGemini RAGAS initialization failed.")
-    print("Error:", error)
 
-    print("\nSwitching RAGAS to local Ollama...")
+    print(
+        "Error:",
+        error
+    )
 
-    initialize_ragas("ollama")
+    print(
+        "\nRAGAS evaluation cannot continue."
+    )
+
+    print(
+        "Ollama will NOT be used as a RAGAS fallback."
+    )
+
+    raise
 
 
 # ============================================================
@@ -1295,7 +1321,7 @@ except Exception as error:
 
 async def score_sample_once(sample):
     """
-    Score one sample using the currently active evaluator.
+    Score one sample using the Gemini RAGAS evaluator.
     """
 
     # ----------------------------------------
@@ -1308,6 +1334,7 @@ async def score_sample_once(sample):
         reference=sample.reference,
     )
 
+
     # ----------------------------------------
     # Faithfulness
     # ----------------------------------------
@@ -1318,23 +1345,26 @@ async def score_sample_once(sample):
         retrieved_contexts=sample.retrieved_contexts,
     )
 
+
     # ----------------------------------------
     # Factual Correctness
     # ----------------------------------------
 
     factual_result = await factual_correctness_metric.ascore(
-        
         response=sample.response,
         reference=sample.reference,
     )
+
 
     return {
         "context_recall": float(
             recall_result.value
         ),
+
         "faithfulness": float(
             faithfulness_result.value
         ),
+
         "factual_correctness": float(
             factual_result.value
         ),
@@ -1343,57 +1373,17 @@ async def score_sample_once(sample):
 
 async def score_sample(sample):
     """
-    First try the current RAGAS evaluator.
+    Score one sample using Gemini RAGAS.
 
-    If Gemini fails, switch to Ollama and retry
-    the complete sample using Ollama.
+    There is NO Ollama fallback here.
 
-    Once switched, Ollama remains active for all
-    remaining samples.
+    If Gemini/RAGAS fails, the original error is raised
+    so that the actual problem can be diagnosed.
     """
 
-    global ragas_backend
-
-    try:
-
-        return await score_sample_once(sample)
-
-    except Exception as error:
-
-        # Do not attempt another Gemini request
-        # after an evaluation failure.
-
-        if ragas_backend != "gemini":
-            print(
-                "\nOllama RAGAS evaluation failed."
-            )
-            raise
-
-        print("\nGemini RAGAS evaluation failed.")
-        print("Error:", error)
-
-        print(
-            "\nSwitching RAGAS evaluator "
-            "to local Ollama..."
-        )
-
-        # Replace all metrics with local Ollama metrics.
-        initialize_ragas("ollama")
-
-        print(
-            "\nRetrying the current sample "
-            "using Ollama..."
-        )
-
-        # Retry the whole sample using Ollama.
-        # No further Gemini calls will be made.
-        result = await score_sample_once(sample)
-
-        print(
-            "Current sample evaluated using Ollama."
-        )
-
-        return result
+    return await score_sample_once(
+        sample
+    )
 
 
 # ============================================================
@@ -1426,7 +1416,11 @@ async def run_ragas_evaluation():
             ragas_backend.upper()
         )
 
-        result = await score_sample(sample)
+
+        result = await score_sample(
+            sample
+        )
+
 
         print(
             "Context Recall:",
@@ -1436,6 +1430,7 @@ async def run_ragas_evaluation():
             )
         )
 
+
         print(
             "Faithfulness:",
             round(
@@ -1443,6 +1438,7 @@ async def run_ragas_evaluation():
                 4
             )
         )
+
 
         print(
             "Factual Correctness:",
@@ -1452,7 +1448,11 @@ async def run_ragas_evaluation():
             )
         )
 
-        scored.append(result)
+
+        scored.append(
+            result
+        )
+
 
     return scored
 
@@ -1474,6 +1474,7 @@ results_df = pd.DataFrame(
     metric_results
 )
 
+
 results_df.insert(
     0,
     "question",
@@ -1483,7 +1484,11 @@ results_df.insert(
     ]
 )
 
-print("\nDETAILED FINRAG EVALUATION RESULTS")
+
+print(
+    "\nDETAILED FINRAG EVALUATION RESULTS"
+)
+
 
 print(
     results_df.to_string(
@@ -1497,6 +1502,7 @@ print(
 # ============================================================
 
 print("\nAVERAGE SCORES")
+
 
 for metric_name in (
     "context_recall",
@@ -1520,26 +1526,31 @@ RAGAS_RESULTS_PATH = (
     / "ragas_results.csv"
 )
 
+
 results_df.to_csv(
     RAGAS_RESULTS_PATH,
     index=False
 )
+
 
 print(
     "\nRAGAS results saved to:",
     RAGAS_RESULTS_PATH
 )
 
+
 print(
     "Original answer results preserved at:",
     RESULTS_PATH
 )
+
 
 print(
     "Final RAGAS evaluator used:",
     ragas_backend.upper()
 )
 
+
 print(
     "\nFinRAG evaluation completed successfully."
-)
+) 

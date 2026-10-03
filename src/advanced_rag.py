@@ -164,8 +164,12 @@ embeddings = embedding_model.encode(
 # 8. QDRANT VECTOR DATABASE
 # ============================================================
 
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
 qdrant_client = QdrantClient(
-    url="http://qdrant:6333"
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY
 )
 
 collection_name = COLLECTION_NAME

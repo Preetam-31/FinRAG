@@ -541,13 +541,9 @@ function App() {
 
                             <div className="source-relevance">
 
-                              Relevance{" "}
+                              RRF Score{" "}
 
-                              {(
-                                Number(source.score) * 100
-                              ).toFixed(1)}
-
-                              %
+                              {Number(source.score).toFixed(3)}
 
                             </div>
 
@@ -845,7 +841,7 @@ function App() {
                   </span>
 
                   <span>
-                    Cross-Encoder
+                    RRF Ranking
                   </span>
 
                   <i></i>

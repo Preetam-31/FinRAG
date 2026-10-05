@@ -417,6 +417,22 @@ def rerank_results(query, results, top_k=5):
     if not results:
         return []
 
+    # Cross-Encoder is disabled.
+    # Use the existing RRF score from hybrid retrieval.
+    if reranker is None:
+        reranked_results = []
+
+        for result in results:
+            reranked_results.append({
+                "text": result["text"],
+                "page": result["page"],
+                "score": float(result["score"]),
+                "score_type": "rrf"
+            })
+
+        return reranked_results[:top_k]
+
+    # Cross-Encoder enabled
     pairs = []
 
     for result in results:
@@ -425,12 +441,7 @@ def rerank_results(query, results, top_k=5):
             result["text"]
         ])
 
-    if reranker is not None:
-        scores = reranker.predict(
-            pairs
-        )
-    else:
-        scores = [0.0] * len(results)
+    scores = reranker.predict(pairs)
 
     reranked_results = []
 
@@ -438,7 +449,8 @@ def rerank_results(query, results, top_k=5):
         reranked_results.append({
             "text": results[index]["text"],
             "page": results[index]["page"],
-            "score": float(score)
+            "score": float(score),
+            "score_type": "cross_encoder"
         })
 
     reranked_results.sort(
@@ -931,6 +943,7 @@ Answer:
             "page": result["page"],
             "score": result["score"],
             "text": cleaned_text,
+            "score_type": result.get("score_type", "rrf"),
             "evidence": relevant_evidence
         })
 
